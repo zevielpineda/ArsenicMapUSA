@@ -1,5 +1,6 @@
 dash
-pandas
-folium
 flask
 gunicorn
+pandas
+folium
+dash-bootstrap-components
