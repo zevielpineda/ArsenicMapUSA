@@ -1,1 +1,1 @@
-web: gunicorn MapMap.app:server
+web: gunicorn app:server
