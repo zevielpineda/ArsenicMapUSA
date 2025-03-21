@@ -1,0 +1,33 @@
+import pandas as pd
+import folium
+
+# Load the dataset (ensure this file includes latitude, longitude, and population columns)
+df = pd.read_csv(r"C:\Users\cdpin\OneDrive\Documents\National Arsenic Stuff for VSC\ArsenicPopulationMap\updated_arsenic_violations_with_coords.csv")
+
+
+# Create a base map centered on the U.S.
+map_center = [39.8283, -98.5795]  # Geographic center of the contiguous US
+m = folium.Map(location=map_center, zoom_start=5)
+
+# Function to normalize population size for marker radius
+def scale_radius(population, min_radius=2, max_radius=20):
+    if pd.isnull(population) or population <= 0:
+        return min_radius
+    return min(max_radius, min_radius + (population ** 0.5) / 50)  # Adjust scale factor as needed
+
+# Add points to the map
+for _, row in df.iterrows():
+    if pd.notnull(row["lat"]) and pd.notnull(row["lng"]):  # Ensure valid coordinates
+        folium.CircleMarker(
+            location=[row["lat"], row["lng"]],
+            radius=scale_radius(row["Population"]),  # Adjust radius based on population
+            color="red",
+            fill=True,
+            fill_color="red",
+            fill_opacity=0.6,
+            popup=f"City: {row['City Name']}<br>State: {row['State']}<br>Population: {row['Population']}"
+        ).add_to(m)
+
+# Save the map
+m.save("arsenic_violations_map.html")
+print("Map saved as 'arsenic_violations_map.html'. Open this file in a web browser to view.")
